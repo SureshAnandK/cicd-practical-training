@@ -1,0 +1,42 @@
+name: API Tests
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    env:
+      BASE_URL: http://localhost:8080
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Compile
+        run: mvn --batch-mode test-compile
+      - name: Start test API
+        run: |
+          nohup java -cp target/classes MockApi 8080 > mockapi.log 2>&1 &
+          for i in $(seq 1 20); do
+            curl -sf "$BASE_URL/health" && exit 0
+            sleep 1
+          done
+          echo "API did not start"; cat mockapi.log; exit 1
+      - name: Run API tests
+        run: mvn --batch-mode verify -Papi-tests -DbaseUrl="$BASE_URL"
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-surefire-reports
+          path: target/surefire-reports

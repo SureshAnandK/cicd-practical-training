@@ -14,7 +14,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <junit.version>5.10.2</junit.version>
     <playwright.version>1.49.0</playwright.version>
-    <test.excludedGroups>ui</test.excludedGroups>
+    <restassured.version>5.5.0</restassured.version>
+    <test.excludedGroups>ui,api</test.excludedGroups>
     <test.groups></test.groups>
   </properties>
 
@@ -29,6 +30,12 @@
       <groupId>com.microsoft.playwright</groupId>
       <artifactId>playwright</artifactId>
       <version>${playwright.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>${restassured.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -53,6 +60,13 @@
       <properties>
         <test.excludedGroups></test.excludedGroups>
         <test.groups>ui</test.groups>
+      </properties>
+    </profile>
+    <profile>
+      <id>api-tests</id>
+      <properties>
+        <test.excludedGroups></test.excludedGroups>
+        <test.groups>api</test.groups>
       </properties>
     </profile>
   </profiles>
