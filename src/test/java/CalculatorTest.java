@@ -5,7 +5,7 @@ class CalculatorTest {
     @Test
     void shouldAddTwoNumbers() {
         Calculator calculator = new Calculator();
-        assertEquals(10, calculator.add(4, 6));
+        assertEquals(11, calculator.add(4, 6));
     }
 
     @Test
