@@ -13,6 +13,9 @@
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <junit.version>5.10.2</junit.version>
+    <playwright.version>1.49.0</playwright.version>
+    <test.excludedGroups>ui</test.excludedGroups>
+    <test.groups></test.groups>
   </properties>
 
   <dependencies>
@@ -20,6 +23,12 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.microsoft.playwright</groupId>
+      <artifactId>playwright</artifactId>
+      <version>${playwright.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -30,7 +39,21 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.2.5</version>
+        <configuration>
+          <excludedGroups>${test.excludedGroups}</excludedGroups>
+          <groups>${test.groups}</groups>
+        </configuration>
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>ui-tests</id>
+      <properties>
+        <test.excludedGroups></test.excludedGroups>
+        <test.groups>ui</test.groups>
+      </properties>
+    </profile>
+  </profiles>
 </project>

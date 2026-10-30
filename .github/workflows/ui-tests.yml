@@ -1,0 +1,49 @@
+name: UI Smoke Tests
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ui-smoke-tests:
+    runs-on: ubuntu-latest
+    env:
+      BASE_URL: https://www.saucedemo.com
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Compile
+        run: mvn --batch-mode test-compile
+      - name: Install Playwright browser and OS dependencies
+        run: >
+          mvn --batch-mode org.codehaus.mojo:exec-maven-plugin:3.1.0:java
+          -Dexec.mainClass=com.microsoft.playwright.CLI
+          -Dexec.classpathScope=test
+          -Dexec.args="install --with-deps chromium"
+      - name: Run UI smoke tests
+        run: mvn --batch-mode verify -Pui-tests
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
+      - name: Upload screenshots and traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-evidence
+          path: |
+            target/screenshots
+            target/traces
+          if-no-files-found: warn
