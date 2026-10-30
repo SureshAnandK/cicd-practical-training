@@ -14,7 +14,7 @@ class LoginPage {
 
     Locator username() { return page.locator("#user-name"); }
     Locator password() { return page.locator("#password"); }
-    Locator loginButton() { return page.locator("#login-button"); }
+    Locator loginButton() { return page.locator("#login-buttonX"); }
     Locator error() { return page.locator("[data-test='error']"); }
 
     void open() {
