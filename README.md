@@ -1,6 +1,6 @@
 # cicd-practical-training
 
-Hands-on training repo covering branching, pull requests and GitHub Actions.
+Hands-on training repo for learning Git, GitHub and CI/CD: branching, pull requests and GitHub Actions.
 
 ## Project
 
