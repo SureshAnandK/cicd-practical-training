@@ -24,3 +24,27 @@ jobs:
           cache: maven
       - name: Build and execute tests
         run: mvn --batch-mode clean verify
+      - name: Summarize test results
+        if: always()
+        run: |
+          {
+            echo "## Test results"
+            echo "| Suite | Tests | Failures | Errors | Skipped | Time (s) |"
+            echo "|---|---|---|---|---|---|"
+            for f in target/surefire-reports/TEST-*.xml target/failsafe-reports/TEST-*.xml; do
+              [ -f "$f" ] || continue
+              name=$(grep -o '<testsuite [^>]*' "$f" | grep -o ' name="[^"]*"' | head -1 | cut -d'"' -f2)
+              attr() { grep -o '<testsuite [^>]*' "$f" | grep -o " $1=\"[^\"]*\"" | head -1 | cut -d'"' -f2; }
+              echo "| $name | $(attr tests) | $(attr failures) | $(attr errors) | $(attr skipped) | $(attr time) |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: automated-test-reports
+          path: |
+            target/surefire-reports/
+            target/failsafe-reports/
+          if-no-files-found: warn
+          retention-days: 14
